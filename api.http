@@ -1,7 +1,7 @@
 @proxyUrl = http://localhost:3000
 @targetUrl = http://localhost:9120
 
-### GitHub — push di un tag
+### GitHub — tag push
 POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/github
 Content-Type: application/json
 X-GitHub-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
@@ -18,7 +18,7 @@ X-GitHub-Event: push
   }
 }
 
-### Forgejo — push di un tag
+### Forgejo — tag push
 POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/forgejo
 Content-Type: application/json
 X-Forgejo-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
@@ -36,7 +36,7 @@ X-Forgejo-Event-Type: push
   }
 }
 
-### Gitea — push di un tag
+### Gitea — tag push
 POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/gitea
 Content-Type: application/json
 X-Gitea-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
@@ -54,7 +54,7 @@ X-Gitea-Event-Type: push
   }
 }
 
-### Gogs — push di un tag
+### Gogs — tag push
 POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/gogs
 Content-Type: application/json
 X-Gogs-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
@@ -71,7 +71,7 @@ X-Gogs-Event: push
   }
 }
 
-### Filtro non corrispondente — atteso 200, nessuna richiesta al listener
+### Filter mismatch — expected 200, no request to the listener
 POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/github
 Content-Type: application/json
 X-GitHub-Event: push
@@ -80,7 +80,7 @@ X-GitHub-Event: push
   "ref": "refs/heads/main"
 }
 
-### Errore del target — il listener risponde 503, il proxy risponde 500
+### Target error — listener responds with 503, proxy responds with 500
 POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/github
 Content-Type: application/json
 X-GitHub-Event: push

@@ -1,20 +1,24 @@
-# git-whproxy — istruzioni per gli agenti
+# git-whproxy — agent instructions
 
-## Progetto e struttura
+## Language
 
-Proxy HTTP per webhook dei servizi Git, scritto in JavaScript ESM (`type: module`), senza build, database o frontend.
+Always use English for source code, identifiers, comments, documentation, and all other project file content, regardless of the language used in the conversation. Conversation replies may use the user's language. Apply this rule to new content and when updating existing project files.
 
-- `src/server.js`: applicazione Express 5, logging con `loglevel`, parsing testuale del JSON, rotta `POST /wh` e inoltro tramite `fetch` nativo.
-- `src/util.js`: `wildcardMatch(wildcard, str)`, usata dalla rotta; confronto completo, senza distinzione tra maiuscole e minuscole, con `*` e `?` e caratteri regex letterali escapati.
-- `package.json` e `pnpm-lock.yaml`: script e dipendenze gestiti con pnpm. `cors` è dichiarato ma non utilizzato dal server.
-- `Dockerfile`: runtime `node:24.21.0-alpine`, installazione delle sole dipendenze di produzione e processo eseguito dall'utente non privilegiato `app`.
-- `compose.yaml`: listener echo locale per osservare i webhook inoltrati, esposto su `localhost:9120`.
-- `api.http`: esempi manuali di webhook GitHub/Forgejo/Gitea/Gogs verso il listener locale, con casi di filtro ed errore upstream.
-- `test/unit`: test Jest del matcher e dell'handler webhook; configurazione ESM in `test/jest.config.js`.
+## Project and structure
 
-## Avvio e configurazione
+HTTP proxy for Git service webhooks, written in JavaScript ESM (`type: module`), with no compilation step, database, or frontend.
 
-Usare Node.js 24.21.0 LTS (versione fissata in `.node-version`), in linea con il container, e pnpm nella versione indicata da `packageManager`, con il lockfile esistente. Anteporre `rtk` ai comandi shell come richiesto da `@/home/marcuson/.codex/RTK.md`.
+- `src/server.js`: Express 5 application, `loglevel` logging, text-based JSON parsing, the `POST /wh` route, and forwarding through native `fetch`.
+- `src/util.js`: `wildcardMatch(wildcard, str)`, used by the route; full-string, case-insensitive matching with `*` and `?`, escaping literal regex characters.
+- `package.json` and `pnpm-lock.yaml`: scripts and dependencies managed with pnpm. `cors` is declared but not used by the server.
+- `Dockerfile`: `node:24.21.0-alpine` runtime, production-only dependency installation, and execution as the unprivileged `app` user.
+- `compose.yaml`: local echo listener for inspecting forwarded webhooks, exposed at `localhost:9120`.
+- `api.http`: manual GitHub/Forgejo/Gitea/Gogs webhook examples targeting the local listener, including filter mismatch and upstream error cases.
+- `test/unit`: Jest tests for the matcher and webhook handler; ESM configuration in `test/jest.config.js`.
+
+## Startup and configuration
+
+Use Node.js 24.21.0 LTS (pinned in `.node-version`), matching the container, and the pnpm version specified by `packageManager`, with the existing lockfile. Prefix shell commands with `rtk` as required by `@/home/marcuson/.codex/RTK.md`.
 
 ```sh
 rtk pnpm install --frozen-lockfile
@@ -22,23 +26,23 @@ rtk pnpm start
 rtk pnpm run start:watch
 ```
 
-`start` avvia il server; `start:watch` lo avvia con il riavvio automatico. Le variabili lette sono `PORT` (default `3000`) e `LOG_LEVEL` (default `info`). Non è presente un caricatore di file `.env`: passare le variabili nell'ambiente del processo.
+`start` runs the server; `start:watch` enables automatic restarts. The supported environment variables are `PORT` (default `3000`) and `LOG_LEVEL` (default `info`). There is no `.env` file loader: supply variables through the process environment.
 
-## Contratto attuale della rotta
+## Current route contract
 
-- `POST /wh` accetta `Content-Type: application/json`, conservando il body come testo tramite `body-parser.text`; il JSON viene letto separatamente per estrarre `ref`.
-- Il filtro opzionale `refMatch` si applica all'ultimo segmento di `ref`, dopo lo split su `/`, non al riferimento completo. Un riferimento assente diventa una stringa vuota.
-- Se il filtro non corrisponde, risponde `200` con `{ success: true, msg: "not forwarded: ref not match" }`, senza contattare la destinazione.
-- `forwardUrl` e `forwardMethod` arrivano dalla query string e sono passati a `fetch` con gli header ricevuti e il body originale, senza normalizzazione esplicita degli header.
-- Per una risposta upstream con `ok: true`, usa lo stato upstream e genera `{ success: true, msg: "ok" }`; non restituisce il body upstream. Risposte upstream non riuscite ed eccezioni di inoltro producono `500`.
+- `POST /wh` accepts `Content-Type: application/json`, preserving the body as text through `body-parser.text`; JSON is parsed separately to extract `ref`.
+- The optional `refMatch` filter applies to the last segment of `ref`, after splitting on `/`, rather than to the full reference. A missing reference becomes an empty string.
+- A filter mismatch returns `200` with `{ success: true, msg: "not forwarded: ref not match" }`, without contacting the destination.
+- `forwardUrl` and `forwardMethod` come from the query string and are passed to `fetch` along with incoming headers and the original body, without explicit header normalization.
+- An upstream response with `ok: true` uses the upstream status and generates `{ success: true, msg: "ok" }`; it does not return the upstream body. Unsuccessful upstream responses and forwarding exceptions produce `500`.
 
-Conservare il body originale durante l'inoltro: serializzare nuovamente il JSON può invalidare le firme dei webhook. Non modificare filtro, codici di risposta o schema JSON incidentalmente.
+Preserve the original body during forwarding: serializing JSON again can invalidate webhook signatures. Do not change filtering, response codes, or the JSON schema incidentally.
 
-## Modifiche e verifiche
+## Changes and verification
 
-Mantenere lo stile esistente: import ESM con estensione `.js`, virgolette doppie, punto e virgola e indentazione di due spazi. Preferire modifiche nei due moduli esistenti e funzionalità native, evitando nuove dipendenze o livelli di astrazione senza necessità concreta. Aggiornare il lockfile insieme alle dipendenze.
+Follow the existing style: ESM imports with `.js` extensions, double quotes, semicolons, and two-space indentation. Prefer changes in the existing two modules and native features, avoiding new dependencies or abstraction layers without a concrete need. Update the lockfile alongside dependencies.
 
-I test unitari sono in `test/unit`, con Jest in modalità ESM e configurazione in `test/jest.config.js` (progetto `unit`). Usare gli script esistenti:
+Unit tests are in `test/unit`, using Jest in ESM mode with configuration in `test/jest.config.js` (the `unit` project). Use the existing scripts:
 
 ```sh
 rtk pnpm test
@@ -46,24 +50,24 @@ rtk pnpm run test:cov
 rtk pnpm run test:watch
 ```
 
-`pnpm test` esegue `test:unit`; il report di coverage è scritto in `coverage/`. I test del server catturano l'handler registrato mockando Express e `fetch`: non aprono porte e non contattano destinazioni reali. Non sostituire questa configurazione con transformer TypeScript: il progetto usa JavaScript ESM. Gli script `test:e2e` sono predisposti nel manifest, ma non è ancora configurato un progetto e2e.
+`pnpm test` runs `test:unit`; coverage reports are written to `coverage/`. Server tests capture the registered handler by mocking Express and `fetch`: they do not open ports or contact real destinations. Do not replace this configuration with TypeScript transformers: the project uses JavaScript ESM. The manifest includes `test:e2e` scripts, but no e2e project is configured yet.
 
-Sono presenti anche `format` (Prettier), `lint:check`/`lint` (ESLint) e gli script `docker:*`. Non eseguire script di pubblicazione o release per verificare una modifica locale. Per modifiche JavaScript controllare anche la sintassi:
+Other scripts include `format` (Prettier), `lint:check`/`lint` (ESLint), and `docker:*`. Do not run publishing or release scripts to verify a local change. For JavaScript changes, also check syntax:
 
 ```sh
 rtk node --check src/server.js
 rtk node --check src/util.js
 ```
 
-Per modifiche al matcher aggiornare `test/unit/util.test.js` (wildcard, confronto completo, case-insensitivity e caratteri regex letterali). Per modifiche alla rotta aggiornare `test/unit/server.test.js` (filtro, body/header originali, esito upstream ed eccezioni). Per verifiche HTTP aggiuntive usare soltanto un listener locale.
+For matcher changes, update `test/unit/util.test.js` (wildcards, full-string matching, case-insensitivity, and literal regex characters). For route changes, update `test/unit/server.test.js` (filtering, original body/headers, upstream outcomes, and exceptions). Use only a local listener for additional HTTP checks.
 
-Limiti da considerare quando si toccano queste aree: nessuna validazione esplicita dei parametri di query, autenticazione, verifica delle firme, restrizione delle destinazioni o timeout applicativo di inoltro. `JSON.parse` e l'estrazione di `ref` precedono il `try` dell'inoltro; il logger globale precede il parser della rotta e quindi normalmente non vede il body parsato. Evitare di registrare segreti o payload sensibili. Questi sono comportamenti attuali, non garanzie di sicurezza né richieste di ampliarli in ogni modifica.
+Limitations to consider when changing these areas: no explicit query parameter validation, authentication, signature verification, destination restrictions, or application-level forwarding timeout. `JSON.parse` and reference extraction precede the forwarding `try` block; the global logger precedes the route parser and therefore normally cannot see the parsed body. Avoid logging secrets or sensitive payloads. These are current behaviors, not security guarantees or requirements to expand them in every change.
 
-## Documentazione e contenuto generato
+## Documentation and generated content
 
-Usare Context7 per domande su API, configurazione o uso di librerie e strumenti: prima `resolve-library-id`, poi `query-docs` sul concetto pertinente. Per comprendere il comportamento locale verificare il sorgente, rispettando il workflow GitNexus sotto.
+Use Context7 for questions about library and tool APIs, configuration, or usage: first `resolve-library-id`, then `query-docs` for the relevant concept. To understand local behavior, verify the source while following the GitNexus workflow below.
 
-La sezione delimitata dai marker GitNexus è generata: mantenerla intatta negli aggiornamenti manuali di questo file. Per aggiornare soltanto l'indice usare la modalità `--index-only`, evitando la riscrittura dei documenti generati.
+The section delimited by the GitNexus markers is generated: preserve it in manual updates to this file. To update only the index, use `--index-only` to avoid rewriting generated documents.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
