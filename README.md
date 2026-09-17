@@ -119,4 +119,4 @@ The proxy does not authenticate requests, verify signatures, restrict destinatio
 
 ## License
 
-MIT, as specified in `package.json`.
+GNU Affero General Public License v3.0 (`AGPL-3.0-only`). See [LICENSE](LICENSE) for the full terms.
