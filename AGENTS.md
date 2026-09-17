@@ -7,12 +7,12 @@ Proxy HTTP per webhook dei servizi Git, scritto in JavaScript ESM (`type: module
 - `src/server.js`: applicazione Express 5, logging con `loglevel`, parsing testuale del JSON, rotta `POST /wh` e inoltro tramite `fetch` nativo.
 - `src/util.js`: `wildcardMatch(wildcard, str)`, usata dalla rotta; confronto completo, senza distinzione tra maiuscole e minuscole, con `*` e `?` e caratteri regex letterali escapati.
 - `package.json` e `pnpm-lock.yaml`: script e dipendenze gestiti con pnpm. `cors` è dichiarato ma non utilizzato dal server.
-- `Dockerfile`: runtime `node:22-alpine`, installazione delle sole dipendenze di produzione e processo eseguito dall'utente non privilegiato `app`.
+- `Dockerfile`: runtime `node:24.21.0-alpine`, installazione delle sole dipendenze di produzione e processo eseguito dall'utente non privilegiato `app`.
 - `api.http`: esempio manuale di webhook Forgejo/GitHub/Gitea/Gogs; contiene una destinazione di rete reale, da sostituire con un listener locale per le prove.
 
 ## Avvio e configurazione
 
-Usare Node.js 22, in linea con il container, e pnpm nella versione indicata da `packageManager`, con il lockfile esistente. Anteporre `rtk` ai comandi shell come richiesto da `@/home/marcuson/.codex/RTK.md`.
+Usare Node.js 24.21.0 LTS (versione fissata in `.node-version`), in linea con il container, e pnpm nella versione indicata da `packageManager`, con il lockfile esistente. Anteporre `rtk` ai comandi shell come richiesto da `@/home/marcuson/.codex/RTK.md`.
 
 ```sh
 rtk pnpm install --frozen-lockfile
