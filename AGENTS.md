@@ -8,7 +8,9 @@ Proxy HTTP per webhook dei servizi Git, scritto in JavaScript ESM (`type: module
 - `src/util.js`: `wildcardMatch(wildcard, str)`, usata dalla rotta; confronto completo, senza distinzione tra maiuscole e minuscole, con `*` e `?` e caratteri regex letterali escapati.
 - `package.json` e `pnpm-lock.yaml`: script e dipendenze gestiti con pnpm. `cors` è dichiarato ma non utilizzato dal server.
 - `Dockerfile`: runtime `node:24.21.0-alpine`, installazione delle sole dipendenze di produzione e processo eseguito dall'utente non privilegiato `app`.
-- `api.http`: esempio manuale di webhook Forgejo/GitHub/Gitea/Gogs; contiene una destinazione di rete reale, da sostituire con un listener locale per le prove.
+- `compose.yaml`: listener echo locale per osservare i webhook inoltrati, esposto su `localhost:9120`.
+- `api.http`: esempi manuali di webhook GitHub/Forgejo/Gitea/Gogs verso il listener locale, con casi di filtro ed errore upstream.
+- `test/unit`: test Jest del matcher e dell'handler webhook; configurazione ESM in `test/jest.config.js`.
 
 ## Avvio e configurazione
 
@@ -36,14 +38,24 @@ Conservare il body originale durante l'inoltro: serializzare nuovamente il JSON 
 
 Mantenere lo stile esistente: import ESM con estensione `.js`, virgolette doppie, punto e virgola e indentazione di due spazi. Preferire modifiche nei due moduli esistenti e funzionalità native, evitando nuove dipendenze o livelli di astrazione senza necessità concreta. Aggiornare il lockfile insieme alle dipendenze.
 
-Non esistono script di test, lint o build. Per modifiche JavaScript controllare almeno la sintassi:
+I test unitari sono in `test/unit`, con Jest in modalità ESM e configurazione in `test/jest.config.js` (progetto `unit`). Usare gli script esistenti:
+
+```sh
+rtk pnpm test
+rtk pnpm run test:cov
+rtk pnpm run test:watch
+```
+
+`pnpm test` esegue `test:unit`; il report di coverage è scritto in `coverage/`. I test del server catturano l'handler registrato mockando Express e `fetch`: non aprono porte e non contattano destinazioni reali. Non sostituire questa configurazione con transformer TypeScript: il progetto usa JavaScript ESM. Gli script `test:e2e` sono predisposti nel manifest, ma non è ancora configurato un progetto e2e.
+
+Sono presenti anche `format` (Prettier), `lint:check`/`lint` (ESLint) e gli script `docker:*`. Non eseguire script di pubblicazione o release per verificare una modifica locale. Per modifiche JavaScript controllare anche la sintassi:
 
 ```sh
 rtk node --check src/server.js
 rtk node --check src/util.js
 ```
 
-Per modifiche al matcher aggiungere una verifica eseguibile con assert nativi che copra `*`, `?`, case-insensitivity e caratteri regex letterali. Per modifiche alla rotta usare un listener HTTP locale e verificare filtro corrispondente/non corrispondente, body originale, errore upstream ed errore di connessione. Non inoltrare le prove alla destinazione di `api.http`.
+Per modifiche al matcher aggiornare `test/unit/util.test.js` (wildcard, confronto completo, case-insensitivity e caratteri regex letterali). Per modifiche alla rotta aggiornare `test/unit/server.test.js` (filtro, body/header originali, esito upstream ed eccezioni). Per verifiche HTTP aggiuntive usare soltanto un listener locale.
 
 Limiti da considerare quando si toccano queste aree: nessuna validazione esplicita dei parametri di query, autenticazione, verifica delle firme, restrizione delle destinazioni o timeout applicativo di inoltro. `JSON.parse` e l'estrazione di `ref` precedono il `try` dell'inoltro; il logger globale precede il parser della rotta e quindi normalmente non vede il body parsato. Evitare di registrare segreti o payload sensibili. Questi sono comportamenti attuali, non garanzie di sicurezza né richieste di ampliarli in ogni modifica.
 
