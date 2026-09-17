@@ -48,3 +48,21 @@ pids
 .yarn-integrity
 
 api.http
+
+# Tests and coverage
+test
+coverage
+
+# Agent tools and code indexes
+.agents
+.claude
+.codex
+.gitnexus
+
+# CI and development configuration
+.github
+.node-version
+.prettierrc
+eslint.config.cjs
+compose.yaml
+release.config.mjs
