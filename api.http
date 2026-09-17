@@ -1,8 +1,3 @@
-# Payload ridotti per provare il proxy; webhook senza secret (nessuna firma).
-# Avvio: rtk docker compose up --build
-# Header e body ricevuti: rtk docker compose logs -f listener
-# Il target è raggiunto dal proxy nel container tramite il nome del servizio.
-# Per usare il proxy con npm start sul computer, impostare targetUrl a http://localhost:9120.
 @proxyUrl = http://localhost:3000
 @targetUrl = http://localhost:9120
 

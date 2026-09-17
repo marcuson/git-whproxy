@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Proxy WH from Git services",
   "type": "module",
+  "packageManager": "pnpm@11.25.0",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "watch": "node --watch src/server.js"
+    "start:debug": "node --watch --debug=0.0.0.0:9229 src/server.js",
+    "start:prod": "node src/server.js",
+    "start:watch": "node --watch src/server.js",
+    "start": "pnpm run start:prod"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
