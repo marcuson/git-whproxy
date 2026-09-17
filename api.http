@@ -1,0 +1,96 @@
+# Payload ridotti per provare il proxy; webhook senza secret (nessuna firma).
+# Avvio: rtk docker compose up --build
+# Header e body ricevuti: rtk docker compose logs -f listener
+# Il target è raggiunto dal proxy nel container tramite il nome del servizio.
+# Per usare il proxy con npm start sul computer, impostare targetUrl a http://localhost:9120.
+@proxyUrl = http://localhost:3000
+@targetUrl = http://localhost:9120
+
+### GitHub — push di un tag
+POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/github
+Content-Type: application/json
+X-GitHub-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
+X-GitHub-Event: push
+
+{
+  "ref": "refs/tags/v0.12.1",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "60456cb1142ef976ecec88660e5c20e41b8da15b",
+  "commits": [],
+  "repository": {
+    "name": "komodo-resources",
+    "full_name": "marcuson/komodo-resources"
+  }
+}
+
+### Forgejo — push di un tag
+POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/forgejo
+Content-Type: application/json
+X-Forgejo-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
+X-Forgejo-Event: push
+X-Forgejo-Event-Type: push
+
+{
+  "ref": "refs/tags/v0.12.1",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "60456cb1142ef976ecec88660e5c20e41b8da15b",
+  "commits": [],
+  "repository": {
+    "name": "komodo-resources",
+    "full_name": "marcuson/komodo-resources"
+  }
+}
+
+### Gitea — push di un tag
+POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/gitea
+Content-Type: application/json
+X-Gitea-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
+X-Gitea-Event: push
+X-Gitea-Event-Type: push
+
+{
+  "ref": "refs/tags/v0.12.1",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "60456cb1142ef976ecec88660e5c20e41b8da15b",
+  "commits": [],
+  "repository": {
+    "name": "komodo-resources",
+    "full_name": "marcuson/komodo-resources"
+  }
+}
+
+### Gogs — push di un tag
+POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/gogs
+Content-Type: application/json
+X-Gogs-Delivery: cf784a2a-46b9-4a87-9e03-e30d7b35f9f3
+X-Gogs-Event: push
+
+{
+  "ref": "refs/tags/v0.12.1",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "60456cb1142ef976ecec88660e5c20e41b8da15b",
+  "commits": [],
+  "repository": {
+    "name": "komodo-resources",
+    "full_name": "marcuson/komodo-resources"
+  }
+}
+
+### Filtro non corrispondente — atteso 200, nessuna richiesta al listener
+POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/github
+Content-Type: application/json
+X-GitHub-Event: push
+
+{
+  "ref": "refs/heads/main"
+}
+
+### Errore del target — il listener risponde 503, il proxy risponde 500
+POST {{proxyUrl}}/wh?refMatch=v*.*.*&forwardMethod=POST&forwardUrl={{targetUrl}}/listener/github
+Content-Type: application/json
+X-GitHub-Event: push
+X-Set-Response-Status-Code: 503
+
+{
+  "ref": "refs/tags/v0.12.1"
+}

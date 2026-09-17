@@ -1,0 +1,19 @@
+{
+  "name": "wh-proxy",
+  "version": "1.0.0",
+  "description": "Proxy WH from Git services",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "watch": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "loglevel": "^1.9.2"
+  },
+  "author": "Leonardo Marcucci <marcuson.nn90@gmail.com>",
+  "license": "MIT"
+}
