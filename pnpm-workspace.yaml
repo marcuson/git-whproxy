@@ -1,0 +1,4 @@
+# Use prebuilt native bindings; approve source builds if a platform needs them.
+allowBuilds:
+  '@parcel/watcher': false
+  unrs-resolver: false

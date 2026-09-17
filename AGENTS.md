@@ -11,6 +11,8 @@ HTTP proxy for Git service webhooks, written in JavaScript ESM (`type: module`),
 - `src/server.js`: Express 5 application, `loglevel` logging, text-based JSON parsing, the `POST /wh` route, and forwarding through native `fetch`.
 - `src/util.js`: `wildcardMatch(wildcard, str)`, used by the route; full-string, case-insensitive matching with `*` and `?`, escaping literal regex characters.
 - `package.json` and `pnpm-lock.yaml`: scripts and dependencies managed with pnpm. `cors` is declared but not used by the server.
+- `pnpm-workspace.yaml`: explicit dependency build policy; native bindings use prebuilt packages instead of running build scripts for `@parcel/watcher` and `unrs-resolver`.
+- `.github/workflows/release.yml`: formatting, lint, and unit tests run before release. Only pushes or manual runs on `main`, `beta`, and `alpha` can reach the publishing job; pull requests only run checks.
 - `Dockerfile`: `node:24.21.0-alpine` runtime, production-only dependency installation, and execution as the unprivileged `app` user.
 - `compose.yaml`: local echo listener for inspecting forwarded webhooks, exposed at `localhost:9120`.
 - `api.http`: manual GitHub/Forgejo/Gitea/Gogs webhook examples targeting the local listener, including filter mismatch and upstream error cases.
