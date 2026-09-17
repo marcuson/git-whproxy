@@ -1,11 +1,11 @@
-const prettierRecommended = require("eslint-plugin-prettier/recommended");
+const prettierRecommended = require('eslint-plugin-prettier/recommended');
 
 module.exports = [
-	{
-		ignores: ["coverage/**", "docs/**"],
-	},
-	{
-		files: ["src/**/*.js", "test/**/*.js"],
-	},
-	prettierRecommended,
+  {
+    ignores: ['coverage/**', 'docs/**'],
+  },
+  {
+    ...prettierRecommended,
+    files: ['src/**/*.js', 'test/**/*.js'],
+  },
 ];

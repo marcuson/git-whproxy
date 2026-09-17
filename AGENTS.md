@@ -40,7 +40,7 @@ Preserve the original body during forwarding: serializing JSON again can invalid
 
 ## Changes and verification
 
-Follow the existing style: ESM imports with `.js` extensions, double quotes, semicolons, and two-space indentation. Prefer changes in the existing two modules and native features, avoiding new dependencies or abstraction layers without a concrete need. Update the lockfile alongside dependencies.
+Follow the existing style: ESM imports with `.js` extensions, single quotes as configured in `.prettierrc`, semicolons, and two-space indentation. Prefer changes in the existing two modules and native features, avoiding new dependencies or abstraction layers without a concrete need. Update the lockfile alongside dependencies.
 
 Unit tests are in `test/unit`, using Jest in ESM mode with configuration in `test/jest.config.js` (the `unit` project). Use the existing scripts:
 
@@ -52,7 +52,7 @@ rtk pnpm run test:watch
 
 `pnpm test` runs `test:unit`; coverage reports are written to `coverage/`. Server tests capture the registered handler by mocking Express and `fetch`: they do not open ports or contact real destinations. Do not replace this configuration with TypeScript transformers: the project uses JavaScript ESM. The manifest includes `test:e2e` scripts, but no e2e project is configured yet.
 
-Other scripts include `format` (Prettier), `lint:check`/`lint` (ESLint), and `docker:*`. Do not run publishing or release scripts to verify a local change. For JavaScript changes, also check syntax:
+Other scripts include `format`/`format:check` (Prettier), `lint:check`/`lint` (ESLint), and `docker:*`. Formatting and lint scripts target `src/**/*.js` and `test/**/*.js`. Run `format:check` and `lint:check` for read-only checks; `format` and `lint` apply fixes. ESLint currently enforces Prettier formatting, without a separate set of semantic lint rules. Do not run publishing or release scripts to verify a local change. For JavaScript changes, also check syntax:
 
 ```sh
 rtk node --check src/server.js

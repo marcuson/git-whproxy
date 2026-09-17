@@ -1,19 +1,19 @@
-import { fileURLToPath } from "node:url";
+import { fileURLToPath } from 'node:url';
 
-const rootDir = fileURLToPath(new URL("../", import.meta.url));
+const rootDir = fileURLToPath(new URL('../', import.meta.url));
 
 export default {
   rootDir,
-  collectCoverageFrom: ["src/**/*.js"],
-  coverageDirectory: "<rootDir>/coverage",
-  coverageProvider: "v8",
+  collectCoverageFrom: ['src/**/*.js'],
+  coverageDirectory: '<rootDir>/coverage',
+  coverageProvider: 'v8',
   projects: [
     {
-      displayName: "unit",
+      displayName: 'unit',
       rootDir,
-      testEnvironment: "node",
+      testEnvironment: 'node',
       transform: {},
-      testMatch: ["<rootDir>/test/unit/**/*.test.js"],
+      testMatch: ['<rootDir>/test/unit/**/*.test.js'],
     },
   ],
 };
